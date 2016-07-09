@@ -133,32 +133,34 @@ public class Test extends Thread{
     public static void startMonitor2(){
         try {
         	StringBuffer params = new StringBuffer();
-        	String cookie = "JSESSIONID=4E6EE5471F6A390761A8A2C2BEE7183D.jvm4; CNZZDATA1000244059=2064336502-1465173561-%7C1465173561";
+        	String cookie = "JSESSIONID=38DF3867478F7C27AF66715334CA7C5B.jvm4; CNZZDATA1000244059=535179176-1468026563-%7C1468026563";
         	String data = HttpUtils.sendSSLPost("http://www.hncsjj.gov.cn:8085/CsZzYy/cszzyy/queryPlan.action", "UTF-8", params, cookie);
         	@SuppressWarnings("unchecked")
 			List<Map<String, Object>> dataList = JSON.parseObject(data, List.class);
         	String planIds = "";
         	for(Map<String, Object> map : dataList) {
             	System.out.println(map);
-            	if(map.get("planName").toString().indexOf("左家垅科目二考场") > -1 ) {
+            	if(map.get("planName").toString().indexOf("望城") > -1 ) {
             		//[{"planIds":"67080057","planName":"星沙科目二考场"},{"planIds":"67080055","planName":"青竹湖科目二考场"},{"planIds":"67080230@67080229@67080235@67080234","planName":"左家垅科目二考场"}]
             		planIds = map.get("planIds").toString();
             		break;
             	}
             }
         	
-        	
-    		params.append("planIds="+planIds);
-            String htmlStr  = HttpUtils.sendSSLPost(URL ,"UTF-8", params, cookie);
-            @SuppressWarnings("unchecked")
-			List<Map<String, Object>> mapList = JSON.parseObject(htmlStr, List.class);
-            String emailContent = "";
-            for(Map<String, Object> map : mapList) {
-            	System.out.println(map);
-            	if(map.get("kscx").toString().indexOf("新捷达") > -1 ) {
-            		emailContent += map.toString();
-            	}
-            }
+        	String emailContent = "";
+        	if(planIds != null && planIds.length() > 0) {
+	    		params.append("planIds="+planIds);
+	            String htmlStr  = HttpUtils.sendSSLPost(URL ,"UTF-8", params, cookie);
+	            @SuppressWarnings("unchecked")
+				List<Map<String, Object>> mapList = JSON.parseObject(htmlStr, List.class);
+	            
+	            for(Map<String, Object> map : mapList) {
+	            	System.out.println(map);
+	            	if(map.get("kscx").toString().indexOf("新捷达") > -1 ) {
+	            		emailContent += map.toString();
+	            	}
+	            }
+        	}
             
             if(!"".equals(emailContent)){
                 sendEmail(emailContent);

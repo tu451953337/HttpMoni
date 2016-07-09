@@ -19,7 +19,7 @@ public class Test58xueche extends Thread {
 	}
 	
 	static int count = 0;
-	static int IntervalTime = 3;
+	static int IntervalTime = 1;
 	@Override
 	public void run() {
 		
@@ -29,12 +29,39 @@ public class Test58xueche extends Thread {
             while(true){
                 count++;
                 System.out.println("第" + count + "次监控：" + formatter.format(new Date()));
-                query("2016-06-18");
-    			query("2016-06-19");
-                Thread.sleep(IntervalTime * 60 * 1000);//睡眠1000
+                int time = getIntervalTime();
+                if(time > 0) {
+                	query("2016-06-20");
+                	Thread.sleep(time);
+                } else {
+                	Thread.sleep(60000);
+                }
             }
         }catch(Exception e){e.printStackTrace();}
 		
+	}
+	
+	int getIntervalTime() throws Exception{
+		int i=13;
+		String startTimeStr = "2016-06-"+i+" 23:59:50";
+		String endTimeStr = "2016-06-"+(i+1)+" 00:00:10";
+		String startTimeStr2 = "2016-06-"+i+" 23:59:00";
+		String endTimeStr2 = "2016-06-"+(i+1)+" 00:01:05";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		long startTime = sdf.parse(startTimeStr).getTime();
+		long startTime2 = sdf.parse(startTimeStr2).getTime();
+		long endTime = sdf.parse(endTimeStr).getTime();
+		long endTime2 = sdf.parse(endTimeStr2).getTime();
+		long cur = new Date().getTime();
+		if(startTime <= cur && cur <= endTime) {
+			return 500;
+		} else if(cur>=startTime2 && cur<=endTime2){
+			return 2000;
+		} else if(cur>=endTime2){
+			return 60000;
+		} else {
+			return -1;
+		}
 	}
 
 
@@ -80,7 +107,7 @@ public class Test58xueche extends Thread {
 				Map<String, Object> param = (Map<String, Object>)schedule.get("param");
 				String subdate = (String) param.get("subdate");
 				subdate = subdate.replace(" ", "%20");
-				url = "http://api.xueche.com/subscribe/order?callback=jsonp10&userphone=18503049916&remark=&subdate="+subdate+"&timelength=4&canmany=-1&phonedes=13683866385DABD52F224CAC9C2A0C27&cityid=414&rdowirads=4965746 HTTP/1.1";
+				url = "http://api.xueche.com/subscribe/order?callback=jsonp10&userphone=18503049916&remark=&subdate="+subdate+"&timelength=4&canmany=-1&phonedes=13683866385DABD52F224CAC9C2A0C27&cityid=414&rdowirads=4965746";
 				execute(url, cookie);
 			}
 		}
